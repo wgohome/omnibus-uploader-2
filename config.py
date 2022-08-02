@@ -3,6 +3,7 @@ from pydantic import BaseSettings, validator
 
 class Settings(BaseSettings):
     DATABASE_URL: str
+    DATABASE_NAME: str
     DATA_DIR: str
     LOG_DIR: str
 
