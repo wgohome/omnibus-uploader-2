@@ -2,6 +2,7 @@ from collections.abc import Callable
 import csv
 import gzip
 import os
+import re
 from typing import Generator, Iterator
 
 from uploader.models import (
@@ -116,7 +117,17 @@ class TpmReader(RowsReader):
     def get_sample_labels(self) -> list[str]:
         if self.header is None or len(self.header) < 2:
             raise RuntimeError("Tpm Matrix needs to have a header of sample labels")
-        return [label.upper() for label in self.header[1:]]
+        return [self._clean_sample_label(label) for label in self.header[1:]]
+
+    @staticmethod
+    def _clean_sample_label(label: str) -> str:
+        # There were sample labels like 'SRR866568.HTSEQ'
+        # like wtf are those ppl uploading the SRR samples doing pfft!! 😡
+        # Now our script takes longer to do these regex 💢
+        match = re.match(r"^([a-zA-Z]+[\d]+)[\W].+$", label)
+        if match is None:
+            return label.upper()
+        return match.group(1).upper()
 
     @staticmethod
     def _line_processor(row):
