@@ -21,15 +21,13 @@ from uploader.readers.map_readers import PlantOntologyMap
 from uploader.readers.rows_readers import InterproReader, TpmReader
 from uploader.setup_db import get_collection, get_db, get_db_reset
 
-DB = get_db_reset()
+DB = get_db()
 
 
 def main():
     upload_species(DB)
     species_id_map = get_species_id_map(DB)
-    # FIXME remove this testing line
-    for taxid, species_id in list(species_id_map.items())[:2]:
-    # for taxid, species_id in species_id_map.items():
+    for taxid, species_id in species_id_map.items():
         #
         # Upload genes
         #
@@ -63,9 +61,7 @@ def main():
     # Group interpro annotations accrosss all species and handle
     #
     interpro_aggregator = InteproAggregator()
-    # FIXME remove from testing
-    for taxid, species_id in list(species_id_map.items())[:2]:
-    # for taxid, species_id in species_id_map.items():
+    for taxid, species_id in species_id_map.items():
         gene_id_map = get_gene_id_map(species_id, DB)
         interpro_reader = InterproReader(get_filepath(taxid=taxid, sub_dir="interpro-annotations"))
         interpro_aggregator.append_from_whole_species(taxid, interpro_reader.parse(), gene_id_map)
