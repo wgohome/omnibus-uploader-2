@@ -1,0 +1,29 @@
+site_name: Plant Gene Expression Uploader
+theme:
+  name: material
+  palette:
+    primary: blue grey
+    accent: teal
+  icon:
+    repo: fontawesome/brands/github
+nav:
+
+repo_url: https://github.com/wirriamm/omnibus-uploader-2
+repo_name: wirriamm/omnibus-uploader-2
+
+copyright: Mutwil Lab 2022
+extra:
+  generator: true
+  social:
+    - icon: material/web
+      link: https://plant.tools
+markdown_extensions:
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
