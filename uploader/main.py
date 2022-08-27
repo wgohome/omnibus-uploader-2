@@ -3,7 +3,7 @@ from pymongo.errors import BulkWriteError
 from pymongo.database import Database
 
 from config import settings
-from readers import (
+from uploader.readers import (
     SpeciesReader,
     GenesReader,
 )
@@ -23,11 +23,11 @@ from uploader.setup_db import get_collection, get_db, get_db_reset
 
 DB = get_db()
 
-
 def main():
-    upload_species(DB)
+    # upload_species(DB)  # FIXME
     species_id_map = get_species_id_map(DB)
-    for taxid, species_id in species_id_map.items():
+    for taxid, species_id in list(species_id_map.items())[28:28]:
+    # for taxid, species_id in species_id_map.items():  # FIXME
         #
         # Upload genes
         #
@@ -38,6 +38,11 @@ def main():
         # Create sample annotation doc with species id and gene id mapper, and upload
         #
         po_map = PlantOntologyMap(get_filepath(taxid=taxid, sub_dir="sample-annotations")).parse()
+
+        # To handle taxid3055 with no annotations!
+        if po_map == {}:
+            print(f"NO DATA: taxid{taxid} has no PO annotation ...\nNext species...\n")
+            continue
 
         tpm_reader = TpmReader(get_filepath(taxid=taxid, sub_dir="tpm-matrices"))
         tpm_aggregator = TpmBySampleAggregator(
@@ -50,6 +55,9 @@ def main():
         )
         while tpm_aggregator.rows_exhausted is False:
             docs = tpm_aggregator.get_docs_from_chunks(chunk_size=250)
+            # TODO: refactor, clunky, logic should have lived in the aggregator itself
+            if docs == []:
+                continue
             upload_sa_docs(taxid, docs, DB)
 
         #
@@ -82,7 +90,8 @@ def upload_species(db: Database = get_db()) -> None:
     try:
         result = species_coll.insert_many(species_reader.parse(), ordered=False)
     except BulkWriteError as e:
-        print(e)
+        # print(e)
+        print(f"Only {e.details['nInserted']} documents inserted ...")
     print(f"UPLOADED: species list")
 
 
@@ -100,10 +109,17 @@ def upload_genes(taxid: int, species_id: PyObjectId, db: Database = get_db()) ->
         species_id=species_id
     )
     genes_coll = get_collection(GeneDoc, db)  # type: ignore
-    try:
-        result = genes_coll.insert_many(genes_reader.parse(), ordered=False)
-    except BulkWriteError as e:
-        print(e)
+    genes = [*genes_reader.parse()]
+    chunks = []
+    for i in range(0, len(genes), 40000):
+        end = min(i + 40000, len(genes))
+        chunks.append(genes[i:end])
+    for chunk in chunks:
+        try:
+            result = genes_coll.insert_many(chunk, ordered=False)
+        except BulkWriteError as e:
+            # print(e)
+            print(f"Only {e.details['nInserted']} documents inserted ...")
     print(f"UPLOADED: genes for taxid{taxid}")
 
 
@@ -120,7 +136,8 @@ def upload_sa_docs(taxid: int, docs: list[dict], db: Database = get_db()) -> Non
     try:
         result = sa_coll.insert_many(docs, ordered=False)
     except BulkWriteError as e:
-        print(e)
+        # print(e)
+        print(f"Only {e.details['nInserted']} documents inserted ...")
     print(f"UPLOADED: attempted chunk of sample annotations w TPM for {taxid}")
 
 
@@ -129,7 +146,8 @@ def upload_ga_docs(docs: list[dict], db: Database = get_db()) -> list[dict]:
     try:
         result = ga_coll.insert_many(docs, ordered=False)
     except BulkWriteError as e:
-        print(e)
+        # print(e)
+        print(f"Only {e.details['nInserted']} documents inserted ...")
     print(f"UPLOADED: attempted chunk of gene annotations")
     return docs
 
