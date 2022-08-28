@@ -7,7 +7,10 @@ theme:
   icon:
     repo: fontawesome/brands/github
 nav:
-
+  - Overview: index.md
+  - Setup repository: setup.md
+  - Reader classes: readers.md
+  - Uploading steps: uploading.md
 repo_url: https://github.com/wirriamm/omnibus-uploader-2
 repo_name: wirriamm/omnibus-uploader-2
 
@@ -27,3 +30,13 @@ markdown_extensions:
   - pymdownx.keys
   - pymdownx.mark
   - pymdownx.tilde
+  # Tables
+  - tables
+  # Admonitions
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  # Annotations
+  - attr_list
+  - md_in_html
+  - pymdownx.superfences

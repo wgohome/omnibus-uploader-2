@@ -20,3 +20,4 @@ Install Python dependencies.
 Activate the virutal environment. This step has to be done everytime you begin work with the repository in a new shell.
 
     source venv/bin/activate
+
