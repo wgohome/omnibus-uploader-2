@@ -6,28 +6,43 @@ theme:
     accent: teal
   icon:
     repo: fontawesome/brands/github
+  features:
+    - navigation.instant  # XHR instant reloading
+    - navigation.tracking  # Anchor tracking
+    - navigation.indexes  # Sections are also pages
+    - navigation.top  # Back to top
+    - toc.follow  # Sponsor only (not working)
+
+# Order the pages on navigation here
 nav:
   - Overview: index.md
   - Setup repository: setup.md
+  - Data preprocessing: data_preprocessing.md
   - Reader classes: readers.md
   - Uploading steps: uploading.md
+
 repo_url: https://github.com/wirriamm/omnibus-uploader-2
 repo_name: wirriamm/omnibus-uploader-2
-
 copyright: Mutwil Lab 2022
 extra:
   generator: true
   social:
     - icon: material/web
       link: https://plant.tools
+
 markdown_extensions:
+  # Lists
   - attr_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  # Others
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
+  # Text formatting
   - pymdownx.critic
-  - pymdownx.caret
   - pymdownx.keys
+  - pymdownx.caret
   - pymdownx.mark
   - pymdownx.tilde
   # Tables
