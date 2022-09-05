@@ -12,6 +12,7 @@ theme:
     - navigation.indexes  # Sections are also pages
     - navigation.top  # Back to top
     - toc.follow  # Sponsor only (not working)
+    - content.code.annotate
 
 # Order the pages on navigation here
 nav:
@@ -55,3 +56,7 @@ markdown_extensions:
   - attr_list
   - md_in_html
   - pymdownx.superfences
+  # Definition lists
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
