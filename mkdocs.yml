@@ -9,24 +9,40 @@ theme:
   features:
     - navigation.instant  # XHR instant reloading
     - navigation.tracking  # Anchor tracking
-    - navigation.indexes  # Sections are also pages
+    # - navigation.indexes  # Sections are also pages
     - navigation.top  # Back to top
+    - navigation.expand  # Expand collapsible subsections by default
     - toc.follow  # Sponsor only (not working)
     - content.code.annotate
+    - search.highlight  # For highlighing search results
 
 # Order the pages on navigation here
 nav:
   - Overview: index.md
-  - Setup repository: setup.md
-  - Data preprocessing: data_preprocessing.md
-  - Reader classes: readers.md
-  - Uploading steps: uploading.md
+  - Data:
+    - data-processing/index.md
+    - Expression matrices: data-processing/tpm_matrices.md
+    - Plant Ontology annotations: data-processing/po_annotations.md
+    - Protein sequences: data-processing/protein_sequences.md
+    - Mapman annotations: data-processing/mapman_annotations.md
+  - Using the uploader:
+    - uploading/index.md
+    - Setup repository: uploading/setup.md
+    - Reader classes: uploading/readers.md
+    - Uploading steps: uploading/uploading_steps.md
+  # - Data preprocessing: data_preprocessing.md
+  - Database:
+    - Database schema: db/schema.md
+    - MongoDB hosting: db/db_hosting.md
+  - Other components:
+    - Protein sequence search: components/diamond_search.md
+    - Front-end repository: components/front_end.md
 
 repo_url: https://github.com/wirriamm/omnibus-uploader-2
 repo_name: wirriamm/omnibus-uploader-2
 copyright: Mutwil Lab 2022
 extra:
-  generator: true
+  generator: false  # Made with Material for MkDocs
   social:
     - icon: material/web
       link: https://plant.tools

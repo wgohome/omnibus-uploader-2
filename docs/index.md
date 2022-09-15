@@ -1,15 +1,6 @@
 # Overview
 
-This tool serves as the interface for writing data to the Mongo DB instance, which is read by the front-end application [Plant Gene Expression Omnibus](#). This is meant to be used by the administrators of this database (1).
-{.annotate}
-
-1. Hello
-
-Lorem ipsum dolor sit amet, (2) consectetur adipiscing elit.
-{ .annotate }
-2.  :man_raising_hand: I'm an annotation! I can contain `code`, __formatted
-    text__, images, ... basically anything that can be expressed in Markdown.
-
+This tool serves as the interface for writing data to the Mongo DB instance, which is read by the front-end application [Plant Gene Expression Omnibus](#). This is meant to be used by the administrators of this database.
 
 ???+ info "Source code"
 
@@ -36,6 +27,7 @@ Input file format that is currently supported is csv, as is the customary output
 | Plant Ontology annotations | <ul><li></li><li></li><li></li></ul> | One per species |
 | Interpro gene annotations | <ul><li></li><li></li><li></li></ul> | One per species |
 | Mapman gene annotations | <ul><li></li><li></li><li></li></ul> | One per species |
+
 
 ## Steps
 

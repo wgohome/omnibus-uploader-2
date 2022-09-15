@@ -1,25 +1,25 @@
-# Data sources and preprocessing
+# Protein sequences
+
+Protein sequences are written as PEP fasta files.
 
 
-## TPM matrices
+## Data source
 
-!!! warning "Work in Progress"
-
-    :construction_worker_tone1: _To be updated_
+PEP files were obtained by Erielle, with sources documented [here](). ==\# TODO: add link==
 
 
-## Sample to Plant Ontology annotations
-
-!!! warning "Work in Progress"
-
-    :construction_worker_tone1: _To be updated_
-
-
-## Protein sequence data source
+## Data processing
 
 !!! info "Objective"
 
-    We need to preprocess input files involving gene entities, to ensure consistent gene identifiers used throughout the system.
+    We needed to preprocess input files involving gene entities, to ensure consistent gene identifiers used throughout the system.
+
+
+!!! tip "TLDR"
+
+    If you are too {--lazy--} {++busy++} to read, the processing can be summarized in this [Google Sheets](https://docs.google.com/spreadsheets/d/1PHXs9-TEwm1lnPXz05feVgAOzRzxlrKytoUKQWmpRPo/edit?usp=sharing){:target="_blank"}
+
+
 
 ### The problem
 
@@ -27,17 +27,18 @@ We found differences in identifiers in the CDS fasta files and in the PEP fasta 
 
 Mismatch problem:
 
-![gene identifier mismatch problem](images/pep_explainer_1.jpeg)
+![gene identifier mismatch problem](../images/pep_explainer_1.jpeg)
 
 Our data cleaning step:
 
-![standardising gene identifiers](images/pep_explainer_2.jpeg)
+![standardising gene identifiers](../images/pep_explainer_2.jpeg)
 
 As gene identifiers differ between the CDS/TPM file and the PEP file in unique and varied ways, two steps were taken for the cleaning.
 
 1. Exploratory analysis to identify how the identifiers need to be parsed for the different species.
 
 2. Assigning the parsing rules to each species files and generating new pep files with the identifiers modified (if neccessary) to match the identifiers in the CDS/TPM file.
+
 
 ### Exploratory analysis
 
@@ -66,7 +67,7 @@ Iterate identifiers in TPM array
 
 ### Initial exploratory stats
 
-The exploratory statistics are summarised in this table, which can also be viewed in [Google Sheets](https://docs.google.com/spreadsheets/d/1PHXs9-TEwm1lnPXz05feVgAOzRzxlrKytoUKQWmpRPo/edit?usp=sharing){:target="_blank"}
+The exploratory statistics are summarised in this table, which can also be viewed in [Google Sheets](https://docs.google.com/spreadsheets/d/1PHXs9-TEwm1lnPXz05feVgAOzRzxlrKytoUKQWmpRPo/edit?usp=sharing){:target="_blank"}.
 
 <iframe
     src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTVt6BEK-BLHIDSEGTzJMZ97ZYEhBdwZjUZf6s-Jg_QMX_Xn4w2qZ-jT9xR8dWhrWbjtVHFGqa6HBA5/pubhtml?gid=6101554&amp;single=true&amp;widget=true&amp;headers=false"
@@ -97,6 +98,7 @@ The exploratory statistics are summarised in this table, which can also be viewe
 
 The remaining rows were analysed individually. The examples and fixes are detailed in the Google Sheet too.
 
+
 ### Heuristic for replacing identifiers
 
 These heuristics were used for preprocessing the gene identifiers.
@@ -113,6 +115,8 @@ These heuristics were used for preprocessing the gene identifiers.
     - The gene entry can be removed/ignored from the PEP file
 
 - Sometimes, the PEP files comprises multiple isoforms. The symptoms of such cases would be when there are more gene identifiers in PEP file than in TPM file. (For most taxids, the number is higher for TPM file) To deal with this, we have to select the matching isoform, or if there is no perfect match in labels, then we can select any one isoform.
+
+- In some cases the replacement gene identifiers are found within the header line of sequences. We have to manually parse this out for some species.
 
 
 ### Fasta relabeller source code
@@ -131,7 +135,7 @@ Refer to the `jobs` array to see what parsers are exactly assigned to each speci
 
 ### Validation stats
 
-We show that most of our PEP gene identifiers were mapped to a gene indentifier in TPM file.
+We show that most of our PEP gene identifiers were mapped to a gene indentifier in TPM file. Looking at the % matched column shows a good matching of gene identifiers.
 
 <iframe
     src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTVt6BEK-BLHIDSEGTzJMZ97ZYEhBdwZjUZf6s-Jg_QMX_Xn4w2qZ-jT9xR8dWhrWbjtVHFGqa6HBA5/pubhtml?gid=222551301&amp;single=true&amp;widget=true&amp;headers=false"
@@ -141,20 +145,6 @@ We show that most of our PEP gene identifiers were mapped to a gene indentifier 
 </iframe>
 
 
-## Search by protein sequence
+## Data availability
 
-The PEP files are used as the protein sequence database for sequence-based search using the [bbuchfink/diamond](https://github.com/bbuchfink/diamond) aligner.
-
-Note that one species (GOSAR) does not have its PEP file available and hence it will not be searchable by protein sequence in our database.
-
-
-<!--
-### Sources used
-
-For each species, the PEP files (of the matching version as the CDS used for transcript pseudoalignment) were obtained. They were used in two ways.
-
-1. The PEP files were passed through Interproscan to annotate each gene with their **PFAM identifiers** and **GO terms**.
-
-2. The PEP files are used as the protein sequence database for sequence-based search using the [bbuchfink/diamond](https://github.com/bbuchfink/diamond) aligner.
-
-To ensure that the gene identifiers remain consistent, we preprocess the gene identifiers to match those in the CDS files (and by extension, the TPM files). We chose the CDS identifiers as there are more gene identifiers in the CDS than in the PEP files (most of the times). -->
+The cleaned pep files are available [here]().
