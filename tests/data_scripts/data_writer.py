@@ -2,7 +2,8 @@ import os
 import re
 import pandas as pd
 
-from tests.data.data_generator import DataDfType
+from tests.data_scripts.data_generator import DataDfType
+from tests.data_scripts.data_generator import get_data_dfs
 
 
 def write_data_dfs(data_dfs: DataDfType) -> None:
@@ -19,6 +20,8 @@ def recursive_dfs_write(keys_string: str, curr_value: dict | pd.DataFrame):
         recursive_dfs_write(f"{keys_string}/{key}", child)
 
 
-from tests.data.data_generator import get_data_dfs
 data_dfs = get_data_dfs()
 write_data_dfs(data_dfs)
+
+
+
