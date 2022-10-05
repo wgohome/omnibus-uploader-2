@@ -19,46 +19,46 @@ from uploader.readers.helpers import get_filepath
 from uploader.readers.iterators import InterproIterator
 from uploader.readers.map_readers import PlantOntologyMap
 from uploader.readers.rows_readers import InterproReader, TpmReader
-from uploader.setup_db import get_collection, get_db, get_db_reset
+from uploader.setup_db import get_collection, get_db
 
 DB = get_db()
 
 def main():
     # upload_species(DB)  # FIXME
     species_id_map = get_species_id_map(DB)
-    for taxid, species_id in list(species_id_map.items())[28:28]:
+    for taxid, species_id in list(species_id_map.items())[:]:
     # for taxid, species_id in species_id_map.items():  # FIXME
         #
         # Upload genes
         #
-        upload_genes(taxid, species_id, DB)
+        # upload_genes(taxid, species_id, DB)
         gene_id_map = get_gene_id_map(species_id, DB)
 
-        #
-        # Create sample annotation doc with species id and gene id mapper, and upload
-        #
-        po_map = PlantOntologyMap(get_filepath(taxid=taxid, sub_dir="sample-annotations")).parse()
+        # #
+        # # Create sample annotation doc with species id and gene id mapper, and upload
+        # #
+        # po_map = PlantOntologyMap(get_filepath(taxid=taxid, sub_dir="sample-annotations")).parse()
 
-        # To handle taxid3055 with no annotations!
-        if po_map == {}:
-            print(f"NO DATA: taxid{taxid} has no PO annotation ...\nNext species...\n")
-            continue
+        # # To handle taxid3055 with no annotations!
+        # if po_map == {}:
+        #     print(f"NO DATA: taxid{taxid} has no PO annotation ...\nNext species...\n")
+        #     continue
 
-        tpm_reader = TpmReader(get_filepath(taxid=taxid, sub_dir="tpm-matrices"))
-        tpm_aggregator = TpmBySampleAggregator(
-            species_id=species_id,
-            annotation_type="PO",
-            annotation_map=po_map,
-            sample_labels=tpm_reader.get_sample_labels(),
-            row_iterator=tpm_reader.parse(),
-            gene_id_map=gene_id_map,
-        )
-        while tpm_aggregator.rows_exhausted is False:
-            docs = tpm_aggregator.get_docs_from_chunks(chunk_size=250)
-            # TODO: refactor, clunky, logic should have lived in the aggregator itself
-            if docs == []:
-                continue
-            upload_sa_docs(taxid, docs, DB)
+        # tpm_reader = TpmReader(get_filepath(taxid=taxid, sub_dir="tpm-matrices"))
+        # tpm_aggregator = TpmBySampleAggregator(
+        #     species_id=species_id,
+        #     annotation_type="PO",
+        #     annotation_map=po_map,
+        #     sample_labels=tpm_reader.get_sample_labels(),
+        #     row_iterator=tpm_reader.parse(),
+        #     gene_id_map=gene_id_map,
+        # )
+        # while tpm_aggregator.rows_exhausted is False:
+        #     docs = tpm_aggregator.get_docs_from_chunks(chunk_size=250)
+        #     # TODO: refactor, clunky, logic should have lived in the aggregator itself
+        #     if docs == []:
+        #         continue
+        #     upload_sa_docs(taxid, docs, DB)
 
         #
         # Upload mapman annotation by species
@@ -74,14 +74,14 @@ def main():
         interpro_reader = InterproReader(get_filepath(taxid=taxid, sub_dir="interpro-annotations"))
         interpro_aggregator.append_from_whole_species(taxid, interpro_reader.parse(), gene_id_map)
 
-    while interpro_aggregator.rows_exhausted is False:
-        docs = interpro_aggregator.get_docs_from_chunks(chunk_size=50)
-        docs = upload_ga_docs(docs, DB)
-        gene_id_to_ga_map = defaultdict(list)
-        for doc in docs:
-            for gene_id in doc["gene_ids"]:
-                gene_id_to_ga_map[gene_id].append(doc["_id"])
-        update_gene_doc_with_sa_id(gene_id_to_ga_map, DB)
+    # while interpro_aggregator.rows_exhausted is False:
+    #     docs = interpro_aggregator.get_docs_from_chunks(chunk_size=50)
+    #     docs = upload_ga_docs(docs, DB)
+    #     gene_id_to_ga_map = defaultdict(list)
+    #     for doc in docs:
+    #         for gene_id in doc["gene_ids"]:
+    #             gene_id_to_ga_map[gene_id].append(doc["_id"])
+    #     update_gene_doc_with_sa_id(gene_id_to_ga_map, DB)
 
 
 def upload_species(db: Database = get_db()) -> None:

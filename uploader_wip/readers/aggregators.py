@@ -110,7 +110,13 @@ class InteproAggregator:
         else:
             self.ga_dict[row.label].gene_ids.append(gene_id)
 
-    def append_from_whole_species(self, taxid: int, generator: Generator, gene_id_map: dict[str, PyObjectId]) -> None:
+    def append_from_whole_species(
+        self,
+        taxid: int,
+        generator: Generator,
+        gene_id_map: dict[str, PyObjectId],
+        gene_label_map: dict[str, str],
+    ) -> None:
         iterator = InterproIterator(generator)
         while True:
             row = iterator.next_new_entry()
@@ -118,7 +124,10 @@ class InteproAggregator:
                 break
             # Trim isoform suffix in gene label before finding gene id
             # If gene id dont exist in the list, then skip
-            gene_id = gene_id_map.get(strip_gene_isoform(row.gene_label))
+            gene_id = gene_id_map.get(
+
+                # strip_gene_isoform(row.gene_label)
+            )
             if gene_id is None:
                 continue
             self.append(row, gene_id)
