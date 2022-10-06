@@ -150,11 +150,13 @@ def get_data_dfs() -> DataDfType:
         n_genes = np.random.randint(low=10, high=40, size=None, dtype=int)
         sample_labels = [f"sample_{5000 + i}_tax{taxid}" for i in range(1, n_samples + 1)]
         gene_labels = [f"gene_{8000 + i}_tax{taxid}" for i in range(1, n_genes + 1)]
-        data_dfs["species_specific_dfs"][taxid]["tpm_matrix"] = pd.DataFrame(
+        tpm_df = pd.DataFrame(
             data=np.random.random_sample(size=(n_genes, n_samples)) * 100,
             columns=sample_labels,
             index=gene_labels,
         )
+        tpm_df = pd.concat([tpm_df.index.to_series(name="gene_labels"), tpm_df], axis=1)
+        data_dfs["species_specific_dfs"][taxid]["tpm_matrix"] = tpm_df
 
         #
         # Sample annotation assignments
