@@ -130,7 +130,7 @@ def get_data_dfs() -> DataDfType:
             "name": [f"name_of_{ga_type}_{7000 + i}" for i in range(1, 100)],
             # The remaining fields will be specific to the ga_type
             "go_terms": [
-                ", ".join([
+                "|".join([
                     f"go_{7100 + j}_{ga_type}_{7000 + i}"
                     for j in range(1, random.randint(1, 5))
                 ])

@@ -1,9 +1,9 @@
-from pydantic import Field, validator
+from pydantic import validator
 from uploaders.models import CustomBaseModel
 
 
+# To be embedded in GeneAnnotation
 class InterproDetail(CustomBaseModel):
-    desc: str = Field(alias="description")
     go_terms: list[str]
 
     @validator("go_terms", pre=True, always=True)
@@ -11,17 +11,17 @@ class InterproDetail(CustomBaseModel):
         return [item.upper() for item in v]
 
 
-class InterproRow(CustomBaseModel):
+# To parse INTERPRO label (PFAM) assignment files for each species
+class InterproAssignmentRow(CustomBaseModel):
     gene_label: str
-    label: str
-    details: InterproDetail
+    ga_label: str
 
-    @validator("gene_label", "label", pre=True, always=True)
+    @validator("gene_label", "ga_label", pre=True, always=True)
     def upcase_label(cls, v):
         return v.upper()
 
     def __eq__(self, other):
-        return self.gene_label == other.gene_label and self.label == other.label
+        return self.gene_label == other.gene_label and self.ga_label == other.ga_label
 
 
-__all__ = ["InterproRow",  "InterproDetail"]
+__all__ = ["InterproAssignmentRow", "InterproDetail"]

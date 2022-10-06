@@ -3,10 +3,9 @@ from pymongo.database import Database
 
 from uploader3.models import (
     PyObjectId,
-    SpeciesBase,
-    SpeciesDoc,
-    GeneBase,
-    GeneDoc,
+    GeneAnnotationType,
+    GeneAnnotationBase,
+    GeneAnnotationDoc,
 )
 from uploader3.utilities.db_setup import get_db
 from uploader3.utilities.db_queries import (
@@ -15,12 +14,16 @@ from uploader3.utilities.db_queries import (
 )
 
 
-class GeneController:
-    def __init__(self, taxid: int, species_id: PyObjectId, db: Database = get_db()) -> None:
-        # Scope instances of GeneController by species
-        self.taxid: int = taxid
-        self.species_id: PyObjectId = species_id
-        self.model = GeneDoc
+#
+# Refer to the GeneAnnotation entity definition
+# For assignments per species per gene, go to controller for GeneAnnotationBucket
+# For variation in data schema for different types, to be handled by parsers
+#
+class GeneAnnotationController:
+    def __init__(self, ga_type: GeneAnnotationType, db: Database = get_db()) -> None:
+        # Instance scoped by Gene Annotation Type
+        self.ga_type: str = ga_type.value
+        self.model = GeneAnnotationDoc
         self.db = db
         self._label_id_map: dict[int, PyObjectId] | None = None
 
@@ -30,7 +33,7 @@ class GeneController:
             for item in data_dicts
         }
 
-    def upload_many(self, docs: Iterable[GeneBase]) -> None:
+    def upload_many(self, docs: Iterable[GeneAnnotationBase]) -> None:
         data_dicts = upload_many_docs(
             data_dicts=[doc.dict() for doc in docs],
             model=self.model,
@@ -44,7 +47,7 @@ class GeneController:
             self._label_id_map = get_map_from_two_values(
                 "label",
                 "_id",
-                filter={"spe_id": self.species_id},  # Scoped to species!
+                filter={"type": self.ga_type},
                 model=self.model,
                 db=self.db)
         return self._label_id_map

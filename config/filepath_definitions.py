@@ -1,3 +1,6 @@
+from enum import Enum
+
+from uploader3.models.gene_annotation import GeneAnnotationType
 from .settings import settings
 
 # File paths should be relative to settings.DATA_DIR
@@ -55,8 +58,9 @@ class FilepathDefinitions:
     def get_sa_filepath(self, sa_type: str) -> str:
         return f"{self.DATA_DIR}{self.sa_dirname}/{sa_type}.tsv"
 
-    def get_ga_filepath(self, ga_type: str) -> str:
-        return f"{self.DATA_DIR}{self.sa_dirname}/{ga_type}.tsv"
+    def get_ga_filepath(self, ga_type: GeneAnnotationType | str) -> str:
+        ga_type = self._stringify_if_enum(ga_type)
+        return f"{self.DATA_DIR}{self.ga_dirname}/{ga_type}.tsv"
 
     def get_tpm_filepath(self, taxid: int) -> str:
         # Write an if else check if some files are gunzipped and some are not
@@ -65,8 +69,15 @@ class FilepathDefinitions:
     def get_sa_assignment_filepath(self, sa_type: str, taxid: int) -> str:
         return f"{self.DATA_DIR}{self.sa_assignment_dirname}/{sa_type}/taxid{taxid}_{sa_type}.tsv"
 
-    def get_ga_assignment_filepath(self, ga_type: str, taxid: int) -> str:
+    def get_ga_assignment_filepath(self, ga_type: GeneAnnotationType | str, taxid: int) -> str:
+        ga_type = self._stringify_if_enum(ga_type)
         return f"{self.DATA_DIR}{self.ga_assignment_dirname}/{ga_type}/taxid{taxid}_{ga_type}.tsv"
+
+    @staticmethod
+    def _stringify_if_enum(type_val: Enum | str) -> str:
+        if isinstance(type_val, Enum):
+            return type_val.value
+        return type_val
 
 
 filepath_definitions = FilepathDefinitions()
