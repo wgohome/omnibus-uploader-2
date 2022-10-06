@@ -22,7 +22,7 @@ class GeneController:
         self.species_id: PyObjectId = species_id
         self.model = GeneDoc
         self.db = db
-        self._label_id_map: dict[int, PyObjectId] | None = None
+        self._label_id_map: dict[str, PyObjectId] | None = None
 
     def _update_label_id_map(self, data_dicts: list[dict]) -> None:
         self._label_id_map = {
@@ -38,7 +38,7 @@ class GeneController:
         )
         self._update_label_id_map(data_dicts)
 
-    def get_label_id_map(self) -> dict[int, PyObjectId]:
+    def get_label_id_map(self) -> dict[str, PyObjectId]:
         if self._label_id_map is None:
             # Access from DB
             self._label_id_map = get_map_from_two_values(
@@ -50,5 +50,5 @@ class GeneController:
         return self._label_id_map
 
     @property
-    def label_id_map(self) -> dict[int, PyObjectId]:
+    def label_id_map(self) -> dict[str, PyObjectId]:
         return self.get_label_id_map()

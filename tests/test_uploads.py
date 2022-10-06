@@ -3,6 +3,7 @@ from uploader3.controllers import (
     SpeciesController,
     GeneController,
     GeneAnnotationController,
+    GeneAnnotationBucketController,
 )
 from uploader3.models import (
     GeneAnnotationType,
@@ -12,6 +13,7 @@ from uploader3.parsers import (
     GeneParser,
     MapmanUnitParser,
     InterproUnitParser,
+    GeneAnnotationAssignmentParser,
 )
 
 
@@ -65,3 +67,89 @@ def test_upload_interpro_units(write_file_base, test_db):
     interpro_id_map = interpro_ga_controller.get_label_id_map()
     assert len(interpro_id_map) > 0
     assert len([*interpro_unit_parser.parse()]) == len(interpro_id_map)
+
+
+def test_upload_mapman_buckets(write_file_base, test_db):
+    species_controller = SpeciesController(db=test_db)
+    species_parser = SpeciesParser(
+        filepath=filepath_definitions.get_species_list_filepath()
+    )
+    species_controller.upload_many(species_parser.parse())
+    species_id_map = species_controller.get_taxid_id_map()
+
+    mapman_ga_controller = GeneAnnotationController(ga_type=GeneAnnotationType.MAPMAN, db=test_db)
+    mapman_unit_parser = MapmanUnitParser(
+        filepath=filepath_definitions.get_ga_filepath(ga_type=GeneAnnotationType.MAPMAN)
+    )
+    mapman_ga_controller.upload_many(mapman_unit_parser.parse())
+    mapman_id_map = mapman_ga_controller.get_label_id_map()
+
+    for taxid, species_id in species_id_map.items():
+        gene_controller = GeneController(taxid=taxid, species_id=species_id, db=test_db)
+        gene_parser = GeneParser(
+            filepath=filepath_definitions.get_tpm_filepath(taxid=taxid),
+            species_id=species_id
+        )
+        gene_controller.upload_many(gene_parser.parse())
+        label_id_map = gene_controller.get_label_id_map()
+
+        mapman_ga_bucket_controller = GeneAnnotationBucketController(
+            taxid=taxid,
+            ga_type=GeneAnnotationType.MAPMAN,
+            ga_id_map=mapman_id_map,
+            gene_id_map=gene_controller.get_label_id_map(),
+            db=test_db
+        )
+        ga_assignment_parser = GeneAnnotationAssignmentParser(
+            filepath=filepath_definitions.get_ga_assignment_filepath(
+                ga_type=GeneAnnotationType.MAPMAN,
+                taxid=taxid
+            )
+        )
+        mapman_ga_bucket_controller.append_all_rows_to_buckets(
+            rows=ga_assignment_parser.parse()
+        )
+        mapman_ga_bucket_controller.upload_many_from_buckets()
+
+
+def test_upload_interpro_buckets(write_file_base, test_db):
+    species_controller = SpeciesController(db=test_db)
+    species_parser = SpeciesParser(
+        filepath=filepath_definitions.get_species_list_filepath()
+    )
+    species_controller.upload_many(species_parser.parse())
+    species_id_map = species_controller.get_taxid_id_map()
+
+    interpro_ga_controller = GeneAnnotationController(ga_type=GeneAnnotationType.INTERPRO, db=test_db)
+    interpro_unit_parser = InterproUnitParser(
+        filepath=filepath_definitions.get_ga_filepath(ga_type=GeneAnnotationType.INTERPRO)
+    )
+    interpro_ga_controller.upload_many(interpro_unit_parser.parse())
+    interpro_id_map = interpro_ga_controller.get_label_id_map()
+
+    for taxid, species_id in species_id_map.items():
+        gene_controller = GeneController(taxid=taxid, species_id=species_id, db=test_db)
+        gene_parser = GeneParser(
+            filepath=filepath_definitions.get_tpm_filepath(taxid=taxid),
+            species_id=species_id
+        )
+        gene_controller.upload_many(gene_parser.parse())
+        label_id_map = gene_controller.get_label_id_map()
+
+        interpro_ga_bucket_controller = GeneAnnotationBucketController(
+            taxid=taxid,
+            ga_type=GeneAnnotationType.INTERPRO,
+            ga_id_map=interpro_id_map,
+            gene_id_map=gene_controller.get_label_id_map(),
+            db=test_db
+        )
+        ga_assignment_parser = GeneAnnotationAssignmentParser(
+            filepath=filepath_definitions.get_ga_assignment_filepath(
+                ga_type=GeneAnnotationType.INTERPRO,
+                taxid=taxid
+            )
+        )
+        interpro_ga_bucket_controller.append_all_rows_to_buckets(
+            rows=ga_assignment_parser.parse()
+        )
+        interpro_ga_bucket_controller.upload_many_from_buckets()

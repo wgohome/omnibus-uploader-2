@@ -50,19 +50,3 @@ def get_map_from_two_values(
     cursor = species_coll.find(filter, {key_field: 1, value_field: 1})
     species_id_map = {doc[key_field]: doc[value_field] for doc in cursor}
     return species_id_map
-
-
-def get_species_id_map(db: Database = get_db()) -> dict[int, PyObjectId]:
-    # create species taxid -> species id mapper
-    species_coll = get_collection(SpeciesDoc, db)
-    cursor = species_coll.find({}, {"_id": 1, "tax": 1})
-    species_id_map = {int(doc["tax"]): doc["_id"] for doc in cursor}
-    return species_id_map
-
-
-def get_gene_id_map(species_id: PyObjectId, db: Database = get_db()) -> dict[str, PyObjectId]:
-    # create gene label -> gene id mapper to be used later
-    genes_coll = get_collection(GeneDoc, db)
-    cursor = genes_coll.find({"spe_id": species_id}, {"_id": 1, "label": 1})
-    gene_id_map = {doc["label"]: doc["_id"] for doc in cursor}
-    return gene_id_map

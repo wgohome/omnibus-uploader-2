@@ -6,3 +6,4 @@ from .gene_annotation_bucket import *
 from .sample_annotation import *
 from .interpro import *
 from .mapman import *
+from .gene_annotation_assignment import *

@@ -49,8 +49,8 @@ class FilepathDefinitions:
         self.tpm_dirname = "tpm-matrices"
         self.sa_dirname = "sample-annotations"
         self.ga_dirname = "gene-annotations"
-        self.sa_assignment_dirname = "sample-annotations-assingment"
-        self.ga_assignment_dirname = "gene-annotations-assingment"
+        self.sa_assignment_dirname = "sample-annotations-assignment"
+        self.ga_assignment_dirname = "gene-annotations-assignment"
 
     def get_species_list_filepath(self) -> str:
         return f"{self.DATA_DIR}{self.species_list_filename}"
