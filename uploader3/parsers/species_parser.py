@@ -17,7 +17,7 @@ class SpeciesParser(BaseParser):
         doc = SpeciesBase(
             taxid=row[0],
             name=row[1],
-            alias=row[2].split(","),
+            alias=SpeciesParser._parse_alias_string(row[2]),
             cds=Cds(
                 source=row[3],
                 url=row[4],
@@ -26,6 +26,10 @@ class SpeciesParser(BaseParser):
             # ignoring qc stat for now
         )
         return doc
+
+    @staticmethod
+    def _parse_alias_string(alias_string) -> list[str]:
+        return [item.strip() for item in alias_string.split(",")]
 
     @staticmethod
     def _line_validator(row) -> bool:
