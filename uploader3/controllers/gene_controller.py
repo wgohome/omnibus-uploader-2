@@ -7,10 +7,12 @@ from uploader3.models import (
     SpeciesDoc,
     GeneBase,
     GeneDoc,
+    gene,
 )
 from uploader3.utilities.db_setup import get_db
 from uploader3.utilities.db_queries import (
     get_map_from_two_values,
+    update_gene_doc_with_sa_id,
     upload_many_docs,
 )
 
@@ -52,3 +54,10 @@ class GeneController:
     @property
     def label_id_map(self) -> dict[str, PyObjectId]:
         return self.get_label_id_map()
+
+    def append_ga_ids(self, gene_to_ga_map: dict[PyObjectId, list[PyObjectId]]) -> None:
+        update_gene_doc_with_sa_id(
+            gene_to_ga_map,
+            model=self.model,
+            db=self.db
+        )

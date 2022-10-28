@@ -34,6 +34,12 @@ def setup_indexes(db: Database) -> None:
         name="unique_species_gene_labels"
     )
     #
+    # To search gene by their label only
+    #
+    get_collection(GeneDoc, db).create_index(  # type: ignore
+        [("label", ASCENDING)],
+    )
+    #
     # To search gene annotations by type and label
     # and enforce uniqueness
     #

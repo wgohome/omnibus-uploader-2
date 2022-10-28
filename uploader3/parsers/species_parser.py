@@ -29,7 +29,7 @@ class SpeciesParser(BaseParser):
 
     @staticmethod
     def _parse_alias_string(alias_string) -> list[str]:
-        return [item.strip() for item in alias_string.split(",")]
+        return [item.strip() for item in alias_string.split(",") if item.strip()]
 
     @staticmethod
     def _line_validator(row) -> bool:
