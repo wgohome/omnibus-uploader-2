@@ -12,14 +12,11 @@ class Settings(BaseSettings):
     LOG_DIR: str
     TEST_DATA_DIR: str = "tests/data/"
 
-    # TODO: deprecate, should instead edit the input files directly
-    GENE_LABEL_MAPPING_DIR: str
-
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
 
-    @validator("DATA_DIR", "LOG_DIR", "GENE_LABEL_MAPPING_DIR",  "TEST_DATA_DIR")
+    @validator("DATA_DIR", "LOG_DIR", "TEST_DATA_DIR")
     def set_path_with_trailing_slash(cls, v):
         if v.endswith("/"):
             return v
