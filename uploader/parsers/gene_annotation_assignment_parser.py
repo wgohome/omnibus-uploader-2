@@ -1,5 +1,5 @@
-from uploader3.models import GeneAnnotationAssignmentRow
-from uploader3.parsers import BaseParser
+from uploader.models import GeneAnnotationAssignmentRow
+from uploader.parsers import BaseParser
 
 
 class GeneAnnotationAssignmentParser(BaseParser):

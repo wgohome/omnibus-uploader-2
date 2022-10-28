@@ -1,7 +1,7 @@
 # To parse INTERPRO label (PFAM) assignment files for each species
 from pydantic import validator
 
-from uploader3.models import CustomBaseModel
+from uploader.models import CustomBaseModel
 
 
 class GeneAnnotationAssignmentRow(CustomBaseModel):

@@ -1,29 +1,28 @@
 from typing import Iterable
 from pymongo.database import Database
 
-from uploader3.models import (
+from uploader.models import (
     PyObjectId,
-    GeneAnnotationType,
-    GeneAnnotationBase,
-    GeneAnnotationDoc,
+    SpeciesBase,
+    SpeciesDoc,
+    GeneBase,
+    GeneDoc,
+    gene,
 )
-from uploader3.utilities.db_setup import get_db
-from uploader3.utilities.db_queries import (
+from uploader.utilities.db_setup import get_db
+from uploader.utilities.db_queries import (
     get_map_from_two_values,
+    update_gene_doc_with_sa_id,
     upload_many_docs,
 )
 
 
-#
-# Refer to the GeneAnnotation entity definition
-# For assignments per species per gene, go to controller for GeneAnnotationBucket
-# For variation in data schema for different types, to be handled by parsers
-#
-class GeneAnnotationController:
-    def __init__(self, ga_type: GeneAnnotationType, db: Database = get_db()) -> None:
-        # Instance scoped by Gene Annotation Type
-        self.ga_type: str = ga_type.value
-        self.model = GeneAnnotationDoc
+class GeneController:
+    def __init__(self, taxid: int, species_id: PyObjectId, db: Database = get_db()) -> None:
+        # Scope instances of GeneController by species
+        self.taxid: int = taxid
+        self.species_id: PyObjectId = species_id
+        self.model = GeneDoc
         self.db = db
         self._label_id_map: dict[str, PyObjectId] | None = None
 
@@ -33,7 +32,7 @@ class GeneAnnotationController:
             for item in data_dicts
         }
 
-    def upload_many(self, docs: Iterable[GeneAnnotationBase]) -> None:
+    def upload_many(self, docs: Iterable[GeneBase]) -> None:
         data_dicts = upload_many_docs(
             data_dicts=[doc.dict() for doc in docs],
             model=self.model,
@@ -47,7 +46,7 @@ class GeneAnnotationController:
             self._label_id_map = get_map_from_two_values(
                 "label",
                 "_id",
-                filter={"type": self.ga_type},
+                filter={"spe_id": self.species_id},  # Scoped to species!
                 model=self.model,
                 db=self.db)
         return self._label_id_map
@@ -55,3 +54,10 @@ class GeneAnnotationController:
     @property
     def label_id_map(self) -> dict[str, PyObjectId]:
         return self.get_label_id_map()
+
+    def append_ga_ids(self, gene_to_ga_map: dict[PyObjectId, list[PyObjectId]]) -> None:
+        update_gene_doc_with_sa_id(
+            gene_to_ga_map,
+            model=self.model,
+            db=self.db
+        )

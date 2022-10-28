@@ -1,14 +1,14 @@
 from config.filepath_definitions import test_filepath_definitions as filepath_definitions
-from uploader3.controllers import (
+from uploader.controllers import (
     SpeciesController,
     GeneController,
     GeneAnnotationController,
     GeneAnnotationBucketController,
 )
-from uploader3.models import (
+from uploader.models import (
     GeneAnnotationType,
 )
-from uploader3.parsers import (
+from uploader.parsers import (
     SpeciesParser,
     GeneParser,
     MapmanUnitParser,

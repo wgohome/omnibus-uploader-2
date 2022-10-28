@@ -8,7 +8,7 @@ from unittest import mock
 from config.settings import settings
 from tests.data_scripts.data_generator import get_data_dfs
 from tests.data_scripts.data_writer import write_files, DATA_DIR
-from uploader3.utilities.db_setup import setup_indexes
+from uploader.utilities.db_setup import setup_indexes
 
 
 #
@@ -24,7 +24,7 @@ def get_test_db():
 
 @pytest.fixture(scope="session", autouse=True)
 def mock_get_db():
-    with mock.patch("uploader3.utilities.db_setup.get_db", get_test_db()):
+    with mock.patch("uploader.utilities.db_setup.get_db", get_test_db()):
         yield
 
 

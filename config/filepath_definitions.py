@@ -1,6 +1,6 @@
 from enum import Enum
 
-from uploader3.models.gene_annotation import GeneAnnotationType
+from uploader.models.gene_annotation import GeneAnnotationType
 from .settings import settings
 
 # File paths should be relative to settings.DATA_DIR

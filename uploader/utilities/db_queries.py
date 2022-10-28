@@ -3,12 +3,12 @@ from pymongo.database import Database
 from pymongo.errors import BulkWriteError
 from pymongo.operations import UpdateOne
 
-from uploader3.models import (
+from uploader.models import (
     PyObjectId,
     GeneDoc,
     DocumentBaseModel,
 )
-from uploader3.utilities.db_setup import get_db, get_collection
+from uploader.utilities.db_setup import get_db, get_collection
 
 
 def upload_one_doc(doc: dict, model: DocumentBaseModel, db: Database = get_db()) -> dict:
