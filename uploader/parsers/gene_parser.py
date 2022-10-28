@@ -1,5 +1,5 @@
-from uploader3.parsers import BaseParser
-from uploader3.models import (
+from uploader.parsers import BaseParser
+from uploader.models import (
     PyObjectId,
     GeneBase,
 )

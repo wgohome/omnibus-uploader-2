@@ -1,31 +1,27 @@
-from uploader3.models import (
-    InterproDetail,
+from uploader.models import (
+    MapmanDetail,
     GeneAnnotationBase,
     GeneAnnotationType,
 )
-from uploader3.parsers import (
+from uploader.parsers import (
     BaseParser,
 )
 
 
-class InterproUnitParser(BaseParser):
+class MapmanUnitParser(BaseParser):
     def __init__(self, filepath: str):
         super().__init__(filepath, self._line_processor, self._line_validator)
 
     @staticmethod
     def _line_processor(row):
         return GeneAnnotationBase(
-            type=GeneAnnotationType.INTERPRO,
+            type=GeneAnnotationType.MAPMAN,
             label=row[0],
             name=row[1],
-            details=InterproDetail(
-                go_terms=InterproUnitParser._parse_go_terms(row[2])
+            details=MapmanDetail(
+                description=row[2]
             ).dict()
         )
-
-    @staticmethod
-    def _parse_go_terms(go_terms_string: str) -> list[str]:
-        return go_terms_string.split("|")
 
     @staticmethod
     def _line_validator(row) -> bool:

@@ -1,13 +1,13 @@
 from typing import Iterable
 from pymongo.database import Database
 
-from uploader3.models import (
+from uploader.models import (
     PyObjectId,
     SpeciesBase,
     SpeciesDoc,
 )
-from uploader3.utilities.db_setup import get_db
-from uploader3.utilities.db_queries import (
+from uploader.utilities.db_setup import get_db
+from uploader.utilities.db_queries import (
     get_map_from_two_values,
     upload_many_docs,
 )

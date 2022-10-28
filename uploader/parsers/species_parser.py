@@ -1,8 +1,8 @@
-from uploader3.models import (
+from uploader.models import (
     Cds,
     SpeciesBase,
 )
-from uploader3.parsers import (
+from uploader.parsers import (
     BaseParser,
 )
 
