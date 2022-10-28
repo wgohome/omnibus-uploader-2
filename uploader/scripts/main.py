@@ -26,12 +26,12 @@ from uploader.parsers import (
 
 print("Processing species file")
 species_controller = SpeciesController()
-# species_parser = SpeciesParser(
-#     filepath=filepath_definitions.get_species_list_filepath()
-# )
+species_parser = SpeciesParser(
+    filepath=filepath_definitions.get_species_list_filepath()
+)
 # species_controller.upload_many(species_parser.parse())
 species_id_map = species_controller.get_taxid_id_map()
-
+import pdb; pdb.set_trace()
 
 #
 # Upload Gene Annotations

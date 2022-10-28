@@ -1,6 +1,6 @@
 from pydantic import Field, validator
 
-from uploaders.models import (
+from uploader.models import (
     CustomBaseModel,
     DocumentBaseModel,
     PyObjectId,

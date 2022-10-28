@@ -1,5 +1,5 @@
 from pydantic import Field
-from uploaders.models.base import CustomBaseModel, DocumentBaseModel, PyObjectId
+from uploader.models.base import CustomBaseModel, DocumentBaseModel, PyObjectId
 
 
 class GeneAnnotationBucketBase(CustomBaseModel):

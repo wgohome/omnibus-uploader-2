@@ -4,7 +4,7 @@ from pymongo.collection import Collection
 from pymongo.database import Database
 
 from config import settings
-from uploaders.models import (
+from uploader.models import (
     DocumentBaseModel,
     SpeciesDoc,
     GeneDoc,
