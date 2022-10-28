@@ -1,5 +1,5 @@
 from pydantic import validator
-from uploaders.models import CustomBaseModel
+from uploader.models import CustomBaseModel
 
 
 # To be embedded in GeneAnnotation

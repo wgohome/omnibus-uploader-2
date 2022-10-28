@@ -3,7 +3,7 @@ import gzip
 import os
 from typing import Callable, Iterator
 
-from uploaders.models.base import CustomBaseModel
+from uploader.models.base import CustomBaseModel
 
 
 class BaseParser:

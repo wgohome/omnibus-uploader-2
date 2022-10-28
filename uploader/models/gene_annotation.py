@@ -1,6 +1,6 @@
 from enum import Enum
 from pydantic import validator
-from uploaders.models.base import CustomBaseModel, DocumentBaseModel
+from uploader.models.base import CustomBaseModel, DocumentBaseModel
 
 
 class GeneAnnotationType(Enum):
