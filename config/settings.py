@@ -12,6 +12,9 @@ class Settings(BaseSettings):
     LOG_DIR: str
     TEST_DATA_DIR: str = "tests/data/"
 
+    # Others
+    DEFAULT_N_NEIGHBORS: int = 50
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

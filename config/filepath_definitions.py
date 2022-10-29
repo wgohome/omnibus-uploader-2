@@ -27,6 +27,7 @@ class FilepathDefinitions:
         self.ga_dirname = "gene-annotations"
         self.sa_assignment_dirname = "sample-annotations-assignment"
         self.ga_assignment_dirname = "gene-annotations-assignment"
+        self.pcc_results_dirname = "pcc-results"
 
     def get_species_list_filepath(self) -> str:
         return f"{self.DATA_DIR}{self.species_list_filename}"
@@ -48,6 +49,12 @@ class FilepathDefinitions:
     def get_ga_assignment_filepath(self, ga_type: GeneAnnotationType | str, taxid: int) -> str:
         ga_type = self._stringify_if_enum(ga_type)
         return f"{self.DATA_DIR}{self.ga_assignment_dirname}/{ga_type}/taxid{taxid}_{ga_type}.tsv"
+
+    def get_coexpression_index_filepath(self, taxid: int) -> str:
+        return f"{self.DATA_DIR}{self.pcc_results_dirname}/taxid{taxid}_indices.tsv"
+
+    def get_coexpression_pcc_filepath(self, taxid: int) -> str:
+        return f"{self.DATA_DIR}{self.pcc_results_dirname}/taxid{taxid}_pcc.tsv"
 
     @staticmethod
     def _stringify_if_enum(type_val: Enum | str) -> str:
