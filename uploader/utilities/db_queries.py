@@ -67,3 +67,16 @@ def update_gene_doc_with_sa_id(
         coll.bulk_write(requests)
     except BulkWriteError as bwe:
         print(bwe.details)
+
+
+def update_gene_doc_with_neighbors(
+    gene_id: PyObjectId,
+    neighbors: list[dict],
+    model: DocumentBaseModel = GeneDoc,
+    db: Database = get_db(),
+) -> None:
+    coll = get_collection(model, db)
+    _ = coll.update_one(
+        {"_id": gene_id},
+        {"$set": {"neighbors": neighbors}}
+    )

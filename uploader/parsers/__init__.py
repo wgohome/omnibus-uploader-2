@@ -6,3 +6,5 @@ from .interpro_unit_parser import *
 from .gene_annotation_assignment_parser import *
 from .sample_annotation_assignment_parser import *
 from .tpm_parser import *
+from .coexpression_index_parser import *
+from .coexpression_pcc_parser import *

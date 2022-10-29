@@ -5,6 +5,7 @@ from uploader.controllers import (
     GeneAnnotationController,
     GeneAnnotationBucketController,
     SampleAnnotationController,
+    CoexpressionController,
 )
 from uploader.models import (
     GeneAnnotationType,
@@ -33,7 +34,9 @@ species_parser = SpeciesParser(
 )
 species_controller.upload_many(species_parser.parse())
 species_id_map = species_controller.get_taxid_id_map()
-new_species_id_map = {k: v for k, v in species_id_map.items() if k in [85692, 4182, 4236]}
+
+# curr_species_id_map = {k: v for k, v in species_id_map.items() if k in [85692, 4182, 4236]}
+curr_species_id_map = species_id_map
 
 
 #
@@ -64,7 +67,7 @@ interpro_id_map = interpro_ga_controller.get_label_id_map()
 #
 
 
-for taxid, species_id in new_species_id_map.items():
+for taxid, species_id in curr_species_id_map.items():
     print(f"Uploading genes for taxid{taxid}")
     gene_controller = GeneController(taxid=taxid, species_id=species_id)
     gene_parser = GeneParser(
@@ -72,7 +75,32 @@ for taxid, species_id in new_species_id_map.items():
         species_id=species_id
     )
     gene_controller.upload_many(gene_parser.parse())
-    label_id_map = gene_controller.get_label_id_map()
+    gene_label_id_map = gene_controller.get_label_id_map()
+
+
+#
+# Upload top 50 coexpressed gene neighbours
+#
+
+
+for taxid, species_id in curr_species_id_map.items():
+    print(f"Uploading coexpressed genes for taxid{taxid}")
+    gene_controller = GeneController(taxid=taxid, species_id=species_id)
+    gene_label_id_map = gene_controller.get_label_id_map()
+
+    coexpression_controller = CoexpressionController(
+        taxid=taxid,
+        species_id=species_id,
+    )
+    while True:
+        row = coexpression_controller.get_next_row()
+        if row is None:
+            break
+        print(f"Processing gene {row.gene_label}")
+        gene_controller.set_coexpressed_genes(
+            gene_id=gene_label_id_map[row.gene_label],
+            neighbors=row.neighbors,
+        )
 
 
 #
@@ -80,9 +108,9 @@ for taxid, species_id in new_species_id_map.items():
 #
 
 
-for taxid, species_id in new_species_id_map.items():
+for taxid, species_id in curr_species_id_map.items():
     gene_controller = GeneController(taxid=taxid, species_id=species_id)
-    label_id_map = gene_controller.get_label_id_map()
+    gene_label_id_map = gene_controller.get_label_id_map()
 
     print(f"Uploading TPM values bucketed by sample annotations for taxid{taxid}")
     # Get header of samples
@@ -96,7 +124,7 @@ for taxid, species_id in new_species_id_map.items():
     )
     po_controller = SampleAnnotationController(
         species_id=species_id,
-        gene_id_map=gene_controller.get_label_id_map(),
+        gene_id_map=gene_label_id_map,
         sa_type=SampleAnnotationType.PO,
         sample_labels=tpm_parser.get_sample_labels(),
         sa_assignments=sa_assignment_parser.get_sample_annotation_map(),
@@ -109,8 +137,9 @@ for taxid, species_id in new_species_id_map.items():
 #
 
 
-for taxid, species_id in new_species_id_map.items():
+for taxid, species_id in curr_species_id_map.items():
     gene_controller = GeneController(taxid=taxid, species_id=species_id)
+    gene_label_id_map = gene_controller.get_label_id_map()
     #
     # MAPMAN
     #
@@ -122,7 +151,7 @@ for taxid, species_id in new_species_id_map.items():
         taxid=taxid,
         ga_type=GeneAnnotationType.MAPMAN,
         ga_id_map=mapman_id_map,
-        gene_id_map=gene_controller.get_label_id_map()
+        gene_id_map=gene_label_id_map
     )
     ga_assignment_parser = GeneAnnotationAssignmentParser(
         filepath=filepath_definitions.get_ga_assignment_filepath(
@@ -149,7 +178,7 @@ for taxid, species_id in new_species_id_map.items():
         taxid=taxid,
         ga_type=GeneAnnotationType.INTERPRO,
         ga_id_map=interpro_id_map,
-        gene_id_map=gene_controller.get_label_id_map(),
+        gene_id_map=gene_label_id_map,
     )
     ga_assignment_parser = GeneAnnotationAssignmentParser(
         filepath=filepath_definitions.get_ga_assignment_filepath(
