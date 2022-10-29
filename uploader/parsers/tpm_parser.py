@@ -23,4 +23,4 @@ class TpmParser(BaseParser):
         if self.header is None:
             raise ValueError("Header missing from TPM matrix")
         # First column header is not a sample label
-        return self.header[1:]
+        return [label.upper() for label in self.header[1:]]
