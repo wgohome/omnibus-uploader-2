@@ -53,4 +53,4 @@ class SampleAnnotationDoc(SampleAnnotationBase, DocumentBaseModel):
         collection_name: str = "sample_annotations"
 
 
-__all__ = ["SampleAnnotationDoc", "Sample", "TpmRow"]
+__all__ = ["SampleAnnotationDoc", "SampleAnnotationBase", "Sample", "TpmRow"]

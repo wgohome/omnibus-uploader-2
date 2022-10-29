@@ -1,4 +1,3 @@
-# To parse INTERPRO label (PFAM) assignment files for each species
 from pydantic import validator
 
 from uploader.models import CustomBaseModel
