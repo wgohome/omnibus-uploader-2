@@ -4,9 +4,11 @@ from uploader.controllers import (
     GeneController,
     GeneAnnotationController,
     GeneAnnotationBucketController,
+    SampleAnnotationController,
 )
 from uploader.models import (
     GeneAnnotationType,
+    SampleAnnotationType,
 )
 from uploader.parsers import (
     SpeciesParser,
@@ -14,6 +16,8 @@ from uploader.parsers import (
     MapmanUnitParser,
     InterproUnitParser,
     GeneAnnotationAssignmentParser,
+    SampleAnnotationAssignmentParser,
+    TpmParser,
 )
 
 
@@ -156,4 +160,37 @@ def test_upload_interpro_buckets(write_file_base, test_db):
 
 
 def test_upload_sample_annotation_docs(write_file_base, test_db):
-    pass # TODO
+    species_controller = SpeciesController(db=test_db)
+    species_parser = SpeciesParser(
+        filepath=filepath_definitions.get_species_list_filepath()
+    )
+    species_controller.upload_many(species_parser.parse())
+    species_id_map = species_controller.get_taxid_id_map()
+
+    for taxid, species_id in species_id_map.items():
+        gene_controller = GeneController(taxid=taxid, species_id=species_id, db=test_db)
+        gene_parser = GeneParser(
+            filepath=filepath_definitions.get_tpm_filepath(taxid=taxid),
+            species_id=species_id
+        )
+        gene_controller.upload_many(gene_parser.parse())
+        label_id_map = gene_controller.get_label_id_map()
+
+        print(f"Uploading TPM values bucketed by sample annotations for taxid{taxid}")
+        # Get header of samples
+        # Get row by row of tpms
+        tpm_parser = TpmParser(
+            filepath=filepath_definitions.get_tpm_filepath(taxid=taxid)
+        )
+        # Get sample -> po label mapping
+        sa_assignment_parser = SampleAnnotationAssignmentParser(
+            filepath=filepath_definitions.get_sa_assignment_filepath(sa_type=SampleAnnotationType.PO.value, taxid=taxid)
+        )
+        po_controller = SampleAnnotationController(
+            species_id=species_id,
+            gene_id_map=gene_controller.get_label_id_map(),
+            sa_type=SampleAnnotationType.PO,
+            sample_labels=tpm_parser.get_sample_labels(),
+            sa_assignments=sa_assignment_parser.get_sample_annotation_map(),
+        )
+        po_controller.upload_many(row_iterator=tpm_parser.parse())
