@@ -4,5 +4,5 @@ from .gene_parser import *
 from .mapman_unit_parser import *
 from .interpro_unit_parser import *
 from .gene_annotation_assignment_parser import *
-# from .mapman_assignment_parser import *
-# from .interpro_assignment_parser import *
+from .sample_annotation_assignment_parser import *
+from .tpm_parser import *

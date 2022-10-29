@@ -30,7 +30,7 @@ class BaseParser:
             raise FileNotFoundError(f"{filepath} does not exist")
         return filepath
 
-    def _get_header(self) -> list | None:
+    def _get_header(self) -> list[str] | None:
         if self.has_header is False:
             return None
         reader = self._get_reader()

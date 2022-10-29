@@ -153,3 +153,7 @@ def test_upload_interpro_buckets(write_file_base, test_db):
             rows=ga_assignment_parser.parse()
         )
         interpro_ga_bucket_controller.upload_many_from_buckets()
+
+
+def test_upload_sample_annotation_docs(write_file_base, test_db):
+    pass # TODO
