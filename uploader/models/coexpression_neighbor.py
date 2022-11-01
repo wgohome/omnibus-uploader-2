@@ -1,15 +1,11 @@
 from pydantic import validator
 
-from uploader.models.base import CustomBaseModel
+from uploader.models import CustomBaseModel, PyObjectId
 
 
 class CoexpressionNeighbor(CustomBaseModel):
-    label: str
+    gene_id: PyObjectId
     pcc: float
-
-    @validator("label", pre=True, always=True)
-    def upcase_label(cls, v):
-        return v.upper()
 
     @validator("pcc", pre=True, always=True)
     def round_float(cls, v):
