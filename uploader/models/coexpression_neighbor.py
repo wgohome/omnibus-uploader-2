@@ -4,7 +4,7 @@ from uploader.models import CustomBaseModel, PyObjectId
 
 
 class CoexpressionNeighbor(CustomBaseModel):
-    gene_id: PyObjectId
+    gene: PyObjectId
     pcc: float
 
     @validator("pcc", pre=True, always=True)

@@ -68,7 +68,7 @@ class CoexpressionController:
                     break
                 row_result.neighbors.append(
                     CoexpressionNeighbor(
-                        gene_id=self._gene_id_map[self._gene_labels[indices[i]]],
+                        gene=self._gene_id_map[self._gene_labels[indices[i]]],
                         pcc=pccs[i],
                     )
                 )
