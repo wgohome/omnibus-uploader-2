@@ -1,6 +1,5 @@
 from collections import defaultdict
 from typing import Iterable
-import warnings
 import numpy as np
 from pymongo.database import Database
 
@@ -14,6 +13,7 @@ from uploader.models import (
 )
 from uploader.utilities.db_setup import get_db
 from uploader.utilities.db_queries import (
+    update_median_spms_to_sas,
     upload_many_docs,
 )
 
@@ -42,7 +42,7 @@ class SampleAnnotationController:
         # Controller instance scoped by species & sample annotation type
         self._species_id = species_id
         self._sa_type: str = sa_type.value
-        self._gene_id_map = gene_id_map
+        self._gene_id_map: dict[str, PyObjectId] = gene_id_map
         self._model = SampleAnnotationDoc
         self._db = db
         # We assume that list of tpm floats is ordered according to this order of sample labels header
@@ -83,6 +83,7 @@ class SampleAnnotationController:
                 type=self._sa_type,
                 label=annotation_label,
                 avg_tpm=0 if (len(indices) == 0) else np.array(tpm_values)[indices].mean(),
+                med_tpm=0 if (len(indices) == 0) else np.median(np.array(tpm_values)[indices]),
                 samples=[
                     Sample(
                         sample_label=self._sample_labels[i],
@@ -94,8 +95,10 @@ class SampleAnnotationController:
             for annotation_label, indices in self._sample_indices_map.items()
         ]
         total_avg_tpm = sum(doc.avg_tpm for doc in docs)
+        total_med_tpm = sum(doc.med_tpm for doc in docs)
         for doc in docs:
             doc.spm = doc.avg_tpm / total_avg_tpm if total_avg_tpm != 0 else 0
+            doc.spm_med = doc.med_tpm / total_med_tpm if total_med_tpm != 0 else 0
         return docs
 
     def upload_many(self, row_iterator: Iterable[TpmRow]) -> None:
@@ -107,4 +110,32 @@ class SampleAnnotationController:
             _ = upload_many_docs(
                 data_dicts=[doc.dict() for doc in sa_docs],
                 model=self._model,
+            )
+
+
+#
+# For migration purposes
+#
+class SampleAnnotationSpmUpdater:
+    def __init__(
+        self,
+        species_id: PyObjectId,
+        gene_id_map: dict[str, PyObjectId],
+        sa_type: SampleAnnotationType,
+        db: Database = get_db(),
+    ) -> None:
+        # Controller instance scoped by species & sample annotation type
+        self._species_id = species_id
+        self._sa_type: str = sa_type.value
+        self._gene_id_map: dict[str, PyObjectId] = gene_id_map
+        self._model = SampleAnnotationDoc
+        self._db = db
+
+    def update_median_spms(self) -> None:
+        # Gene by gene, so that we can update the spm for all genes together
+        for gene_label, gene_id in self._gene_id_map.items():
+            update_median_spms_to_sas(
+                species_id=self._species_id,
+                gene_id=gene_id,
+                sa_type=self._sa_type,
             )
