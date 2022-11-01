@@ -27,14 +27,16 @@ class SampleAnnotationBase(CustomBaseModel):
     type: str
     label: str
     avg_tpm: float = 0
+    med_tpm: float = 0
     spm: float = 0
+    spm_med: float = 0
     samples: list[Sample]
 
     @validator("type", "label", pre=True, always=True)
     def upcase_label(cls, v):
         return v.upper()
 
-    @validator("avg_tpm", "spm", pre=True, always=True)
+    @validator("avg_tpm", "spm", "med_tpm", "spm_med", pre=True, always=True)
     def round_float(cls, v):
         return round(float(v), 3)
 
