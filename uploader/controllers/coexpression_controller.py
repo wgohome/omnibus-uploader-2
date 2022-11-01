@@ -18,8 +18,10 @@ class CoexpressionController:
         self,
         taxid: int,
         species_id: PyObjectId,
+        gene_id_map: dict[str, PyObjectId],
         n_neighbors: int = settings.DEFAULT_N_NEIGHBORS,
     ) -> None:
+        self._gene_id_map = gene_id_map
         gene_parser = GeneParser(
             filepath=filepath_definitions.get_tpm_filepath(taxid=taxid),
             species_id=species_id
@@ -66,7 +68,7 @@ class CoexpressionController:
                     break
                 row_result.neighbors.append(
                     CoexpressionNeighbor(
-                        label=self._gene_labels[indices[i]],
+                        gene_id=self._gene_id_map[self._gene_labels[indices[i]]],
                         pcc=pccs[i],
                     )
                 )
