@@ -1,3 +1,4 @@
+import numpy as np
 from pymongo import ASCENDING
 from pymongo.database import Database
 from pymongo.errors import BulkWriteError
@@ -5,8 +6,9 @@ from pymongo.operations import UpdateOne
 
 from uploader.models import (
     PyObjectId,
-    GeneDoc,
     DocumentBaseModel,
+    GeneDoc,
+    SampleAnnotationDoc,
 )
 from uploader.utilities.db_setup import get_db, get_collection
 
@@ -80,3 +82,33 @@ def update_gene_doc_with_neighbors(
         {"_id": gene_id},
         {"$set": {"neighbors": neighbors}}
     )
+
+
+#
+# For migration purposes
+#
+def update_median_spms_to_sas(
+    species_id: PyObjectId,
+    gene_id: PyObjectId,
+    sa_type: str,
+    db: Database = get_db(),
+) -> None:
+    coll = get_collection(SampleAnnotationDoc, db)
+    cursor = coll.find({
+        "spe_id": PyObjectId(species_id),
+        "g_id": gene_id,
+        "type": sa_type,
+    })
+    # Dict of sa_id -> update dict
+    to_update = {}
+    for doc in cursor:
+        median_tpm = round(np.median([sample["tpm"] for sample in doc["samples"]]), 3)
+        to_update[doc["_id"]] = {"med_tpm": median_tpm}
+    total_med_tpm = sum(doc["med_tpm"] for doc in to_update.values())
+    for id in to_update.keys():
+        spm_med = to_update[id]["med_tpm"] / total_med_tpm if total_med_tpm != 0 else 0
+        to_update[id]["spm_med"] = round(spm_med, 3)
+        _ = coll.update_one(
+            {"_id": id},
+            {"$set": to_update[id]},
+        )
