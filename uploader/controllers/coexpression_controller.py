@@ -1,6 +1,6 @@
 from typing import Iterator
 from config import settings
-from config.filepath_definitions import filepath_definitions
+from config.filepath_definitions import filepath_definitions, FilepathDefinitions
 from uploader.models import (
     PyObjectId,
     CoexpressionNeighbor,
@@ -20,17 +20,18 @@ class CoexpressionController:
         species_id: PyObjectId,
         gene_id_map: dict[str, PyObjectId],
         n_neighbors: int = settings.DEFAULT_N_NEIGHBORS,
+        custom_filepath_definitions: FilepathDefinitions = filepath_definitions,
     ) -> None:
         self._gene_id_map = gene_id_map
         gene_parser = GeneParser(
-            filepath=filepath_definitions.get_tpm_filepath(taxid=taxid),
+            filepath=custom_filepath_definitions.get_tpm_filepath(taxid=taxid),
             species_id=species_id
         )
         index_parser = CoexpressionIndexParser(
-            filepath=filepath_definitions.get_coexpression_index_filepath(taxid=taxid)
+            filepath=custom_filepath_definitions.get_coexpression_index_filepath(taxid=taxid)
         )
         pcc_parser = CoexpressionPccParser(
-            filepath=filepath_definitions.get_coexpression_pcc_filepath(taxid=taxid)
+            filepath=custom_filepath_definitions.get_coexpression_pcc_filepath(taxid=taxid)
         )
         # Checks
         if not (
