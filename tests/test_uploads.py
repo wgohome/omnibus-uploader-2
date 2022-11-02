@@ -5,6 +5,7 @@ from uploader.controllers import (
     GeneAnnotationController,
     GeneAnnotationBucketController,
     SampleAnnotationController,
+    CoexpressionController,
 )
 from uploader.models import (
     GeneAnnotationType,
@@ -49,6 +50,24 @@ def test_upload_genes(write_file_base, test_db):
         label_id_map = gene_controller.get_label_id_map()
         assert len(label_id_map) > 0
         assert len([*gene_parser.parse()]) == len(label_id_map)
+
+        # Upload pcc too
+        coexpression_controller = CoexpressionController(
+            taxid=taxid,
+            species_id=species_id,
+            gene_id_map=label_id_map,
+            # Needed to override files dir for test
+            custom_filepath_definitions=filepath_definitions,
+        )
+        while True:
+            row = coexpression_controller.get_next_row()
+            if row is None:
+                break
+            print(f"Processing gene {row.gene_label}")
+            gene_controller.set_coexpressed_genes(
+                gene_id=label_id_map[row.gene_label],
+                neighbors=row.neighbors,
+            )
 
 
 def test_upload_mapman_units(write_file_base, test_db):
@@ -98,7 +117,7 @@ def test_upload_mapman_buckets(write_file_base, test_db):
         label_id_map = gene_controller.get_label_id_map()
 
         mapman_ga_bucket_controller = GeneAnnotationBucketController(
-            taxid=taxid,
+            species_id=species_id,
             ga_type=GeneAnnotationType.MAPMAN,
             ga_id_map=mapman_id_map,
             gene_id_map=gene_controller.get_label_id_map(),
@@ -141,7 +160,7 @@ def test_upload_interpro_buckets(write_file_base, test_db):
         label_id_map = gene_controller.get_label_id_map()
 
         interpro_ga_bucket_controller = GeneAnnotationBucketController(
-            taxid=taxid,
+            species_id=species_id,
             ga_type=GeneAnnotationType.INTERPRO,
             ga_id_map=interpro_id_map,
             gene_id_map=gene_controller.get_label_id_map(),
