@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 from typing import TypedDict
 
+from config import settings
+
 
 # This generates the dfs for test files to mock file validations and uploads
 # Structure of test dfs - editable by different fixtures to test different cases
@@ -27,6 +29,8 @@ DfOptionalType = pd.DataFrame | None
 
 class SpeciesSpecificDfsType(TypedDict):
     tpm_matrix: DfOptionalType
+    pcc_indices: np.ndarray
+    pcc_values: np.ndarray
     sa_assignments: dict[str, pd.DataFrame]
     ga_assignments: dict[str, pd.DataFrame]
 
@@ -157,6 +161,21 @@ def get_data_dfs() -> DataDfType:
         )
         tpm_df = pd.concat([tpm_df.index.to_series(name="gene_labels"), tpm_df], axis=1)
         data_dfs["species_specific_dfs"][taxid]["tpm_matrix"] = tpm_df
+
+        #
+        # PCC results
+        #
+        # assert n_genes > settings.DEFAULT_N_NEIGHBORS  # Ref to conftest where DEFAULT_N_NEIGHBORS mocked to 5
+        n_neighbors = settings.DEFAULT_N_NEIGHBORS + 1
+        rng = np.random.default_rng()
+        indices_matrix = np.repeat(
+            np.arange(n_genes)
+                .reshape(1,-1), n_genes, axis=0
+        )
+        indices_matrix = rng.permuted(indices_matrix, axis=1)[:, :n_neighbors]
+        pcc_matrix = np.random.rand(n_genes, n_neighbors)
+        data_dfs["species_specific_dfs"][taxid]["pcc_indices"] = indices_matrix
+        data_dfs["species_specific_dfs"][taxid]["pcc_values"] = pcc_matrix
 
         #
         # Sample annotation assignments

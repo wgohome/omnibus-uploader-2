@@ -56,6 +56,7 @@ def test_upload_genes(write_file_base, test_db):
             taxid=taxid,
             species_id=species_id,
             gene_id_map=label_id_map,
+            n_neighbors=5,
             # Needed to override files dir for test
             custom_filepath_definitions=filepath_definitions,
         )
