@@ -4,7 +4,7 @@ from uploader.models.base import CustomBaseModel, DocumentBaseModel, PyObjectId
 
 class GeneAnnotationBucketBase(CustomBaseModel):
     ga_id: PyObjectId  # Ref to GeneAnnotation
-    tax: int = Field(alias="taxid")
+    spe_id: PyObjectId
     gene_ids: list[PyObjectId] = list()
 
     # Push gene id in to array if it is not already inside
