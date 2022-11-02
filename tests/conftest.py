@@ -1,6 +1,5 @@
 import os
 import shutil
-import pandas as pd
 from pymongo import MongoClient
 import pytest
 from unittest import mock
@@ -25,6 +24,14 @@ def get_test_db():
 @pytest.fixture(scope="session", autouse=True)
 def mock_get_db():
     with mock.patch("uploader.utilities.db_setup.get_db", get_test_db()):
+        yield
+
+
+@pytest.fixture(scope="session", autouse=True)
+def mock_default_n_neighbors():
+    test_settings = settings
+    test_settings.DEFAULT_N_NEIGHBORS = 5
+    with mock.patch("config.settings", test_settings):
         yield
 
 
@@ -64,6 +71,7 @@ def setup_data_dirs():
     os.makedirs(f"{DATA_DIR}sample-annotations", exist_ok=True)
     os.makedirs(f"{DATA_DIR}gene-annotations", exist_ok=True)
     os.makedirs(f"{DATA_DIR}tpm-matrices", exist_ok=True)
+    os.makedirs(f"{DATA_DIR}pcc-results", exist_ok=True)
     os.makedirs(f"{DATA_DIR}sample-annotations-assignment/PO", exist_ok=True)
     os.makedirs(f"{DATA_DIR}gene-annotations-assignment/MAPMAN", exist_ok=True)
     os.makedirs(f"{DATA_DIR}gene-annotations-assignment/INTERPRO", exist_ok=True)

@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import pandas as pd
 import shutil
 
@@ -15,6 +16,10 @@ def write_file(filepath: str, df: pd.DataFrame) -> None:
     df.to_csv(filepath, sep="\t", index=False)
     # pd automatically detects .gz suffix to gzip the file
     print(f"WRITTEN: {filepath}")
+
+
+def write_np_matrix(filepath: str, matrix: np.ndarray, fmt: str) -> None:
+    np.savetxt(filepath, matrix, delimiter="\t", fmt=fmt)
 
 
 # Write files from given data_df
@@ -39,6 +44,16 @@ def write_files(data_df_base):
         write_file(
             f"{DATA_DIR}tpm-matrices/taxid{taxid}_tpm.tsv.gz",
             content["tpm_matrix"]
+        )
+        write_np_matrix(
+            f"{DATA_DIR}pcc-results/taxid{taxid}_indices.tsv",
+            content["pcc_indices"],
+            fmt="%u"
+        )
+        write_np_matrix(
+            f"{DATA_DIR}pcc-results/taxid{taxid}_pcc.tsv",
+            content["pcc_values"],
+            fmt="%.6f"
         )
         for sa_type, df in content["sa_assignments"].items():
             write_file(
