@@ -24,14 +24,14 @@ from uploader.utilities.db_queries import (
 class GeneAnnotationBucketController:
     def __init__(
         self,
-        taxid: int,
+        species_id: PyObjectId,
         ga_type: GeneAnnotationType,
         ga_id_map: dict[str, PyObjectId],
         gene_id_map: dict[str, PyObjectId],
         db: Database = get_db()
     ) -> None:
         # Instance scoped by gene annotation type & species
-        self.taxid = taxid
+        self.species_id = species_id
         self.ga_type: str = ga_type.value
         # Get existing DB ids
         self.ga_id_map = ga_id_map
@@ -53,7 +53,7 @@ class GeneAnnotationBucketController:
             return None
         self._buckets[assignment_row.ga_label] = GeneAnnotationBucketBase(
             ga_id=ga_id,
-            taxid=self.taxid,
+            spe_id=self.species_id,
             gene_ids=[gene_id]
         )
 

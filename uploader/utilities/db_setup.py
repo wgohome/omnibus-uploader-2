@@ -54,7 +54,7 @@ def setup_indexes(db: Database) -> None:
     # NOTE: Additionally can create another index to search by ga_id if needed
     #
     get_collection(GeneAnnotationBucketDoc, db).create_index(  # type: ignore
-        [("tax", ASCENDING), ("ga_id", ASCENDING)],
+        [("spe_id", ASCENDING), ("ga_id", ASCENDING)],
         unique=True,
         name="unique_taxid_ga"
     )
