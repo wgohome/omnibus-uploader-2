@@ -1,6 +1,5 @@
 from collections import defaultdict
 from typing import Iterable
-import warnings
 from pymongo.database import Database
 
 from uploader.models import (
@@ -73,11 +72,11 @@ class GeneAnnotationBucketController:
 
     def get_gene_ga_refs(self) -> dict[PyObjectId, list[PyObjectId]]:
         if len(self._buckets) == 0:
-            warnings.warn("No gene annotations collected yet")
+            print("No gene annotations collected yet")
         gene_to_ga_map: dict[PyObjectId, list[PyObjectId]] = defaultdict(list)
         for bucket in self._buckets.values():
             for gene_id in bucket.gene_ids:
                 gene_to_ga_map[gene_id].append(bucket.ga_id)
         if len(gene_to_ga_map) == 0:
-            warnings.warn("No gene ids in gene annotations collected yet")
+            print("No gene ids in gene annotations collected yet")
         return gene_to_ga_map
