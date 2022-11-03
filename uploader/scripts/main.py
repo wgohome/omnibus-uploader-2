@@ -36,7 +36,7 @@ species_parser = SpeciesParser(
 species_controller.upload_many(species_parser.parse())
 species_id_map = species_controller.get_taxid_id_map()
 
-# curr_species_id_map = {k: v for k, v in species_id_map.items() if k in [85692, 4182, 4236]}
+# curr_species_id_map = {k: v for k, v in species_id_map.items() if k in [2762]}
 curr_species_id_map = species_id_map
 
 
@@ -98,7 +98,7 @@ for taxid, species_id in curr_species_id_map.items():
         row = coexpression_controller.get_next_row()
         if row is None:
             break
-        print(f"Processing gene {row.gene_label}")
+        # print(f"Processing gene {row.gene_label}")
         gene_controller.set_coexpressed_genes(
             gene_id=gene_label_id_map[row.gene_label],
             neighbors=row.neighbors,
