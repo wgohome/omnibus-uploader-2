@@ -1,6 +1,5 @@
 from collections import defaultdict
 from typing import Iterable
-import warnings
 import numpy as np
 from pymongo.database import Database
 
@@ -49,9 +48,9 @@ class SampleAnnotationController:
         # We assume that list of tpm floats is ordered according to this order of sample labels header
         self._sample_labels: list[str] = sample_labels
         if len(sa_assignments) == 0:
-            warnings.warn("Empty sa_assignments found")
+            print("Empty sa_assignments found")
         if sa_assignments.keys() - set(sample_labels) != set():
-            warnings.warn("Not all sa_assignments are found in the sample_labels")
+            print("Not all sa_assignments are found in the sample_labels")
         self._sample_indices_map: dict[str, list[int]] = self._group_tpm_indices_by_annotation(
             sample_labels=sample_labels,
             sa_assignments=sa_assignments,
