@@ -212,5 +212,6 @@ def test_upload_sample_annotation_docs(write_file_base, test_db):
             sa_type=SampleAnnotationType.PO,
             sample_labels=tpm_parser.get_sample_labels(),
             sa_assignments=sa_assignment_parser.get_sample_annotation_map(),
+            db=test_db,
         )
         po_controller.upload_many(row_iterator=tpm_parser.parse())
