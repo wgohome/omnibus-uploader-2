@@ -1,5 +1,6 @@
 from collections import defaultdict
 from typing import Iterable
+import warnings
 import numpy as np
 from pymongo.database import Database
 
@@ -47,12 +48,17 @@ class SampleAnnotationController:
         self._db = db
         # We assume that list of tpm floats is ordered according to this order of sample labels header
         self._sample_labels: list[str] = sample_labels
-        if set(sample_labels) - sa_assignments.keys() != set():
-            raise ValueError("Not all sample_labels are found in the sa_assignments")
+        if len(sa_assignments) == 0:
+            warnings.warn("Empty sa_assignments found")
+        if sa_assignments.keys() - set(sample_labels) != set():
+            warnings.warn("Not all sa_assignments are found in the sample_labels")
         self._sample_indices_map: dict[str, list[int]] = self._group_tpm_indices_by_annotation(
             sample_labels=sample_labels,
             sa_assignments=sa_assignments,
         )
+
+    def _has_no_sample_annotations(self) -> bool:
+        return len(self._sample_indices_map) == 0
 
     def _group_tpm_indices_by_annotation(
         self,
@@ -102,6 +108,9 @@ class SampleAnnotationController:
         return docs
 
     def upload_many(self, row_iterator: Iterable[TpmRow]) -> None:
+        if self._has_no_sample_annotations():
+            print("No sample annotations for this species, nothing to upload")
+            return None
         for row in row_iterator:
             sa_docs = self.aggregate_into_sa_docs(
                 gene_id=self._gene_id_map[row.gene_label],

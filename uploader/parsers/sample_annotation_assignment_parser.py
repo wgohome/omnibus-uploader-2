@@ -10,13 +10,14 @@ class SampleAnnotationAssignmentParser(BaseParser):
     def _line_processor(row):
         return SampleAnnotationAssignmentRow(
             sample_label=row[0],
-            sa_label=row[1] or None,
+            sa_label=row[1],
         )
 
     @staticmethod
     def _line_validator(row) -> bool:
-        # Rows with no annotations should still be recorded to preserve order of samples
-        return True
+        if row[1]:
+            return True
+        return False
 
     def get_sample_annotation_map(self):
         return {row.sample_label: row.sa_label for row in self.parse()}
