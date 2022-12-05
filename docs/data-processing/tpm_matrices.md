@@ -1,14 +1,15 @@
 # Gene expression matrices
 
+Gene expression is quantified in transcipts per million (TPM) by kallisto, and is presented as a two-dimensional matrix of **gene** against RNA-seq **samples** for each species.
+
+
 ## Data source
 
-Gene expression is quantified in transcipts per million (TPM) by kallisto, and is presented as a two-dimensional matrix of gene against RNA-seq samples for each species.
+Data is obtained from previous studies. Species and data list curated by Marek Mutwil and Erielle Villanueva. More details on the download and processing pipeline used can be found in the data sources listed below.
 
-Data is obtained from previous studies.  More details on the pipeline used can be found in the data sources listed below.
-
-- [LSTrAP-Kingdom]()
-- [EVOREPRO]()
-- Other projects ==\# TODO: to update==
+- [LSTrAP-Kingdom](https://academic.oup.com/bioinformatics/article/37/18/3053/6168119)
+- [EVOREPRO](https://www.nature.com/articles/s41477-021-00958-2)
+- Manually processed by Marek Mutwil (*Sesanum indicum, Lactuca sativa, Triticum dicoccoides*), using LSTrAP-Cloud
 
 A record CDS source and the source project from which matrices are derived from are documented in this Google sheet: ==\# TODO: embed gooogle sheet==
 
