@@ -19,5 +19,8 @@ class SampleAnnotationAssignmentParser(BaseParser):
             return True
         return False
 
-    def get_sample_annotation_map(self):
+    def get_sample_annotation_map(self) -> dict[str, str]:
         return {row.sample_label: row.sa_label for row in self.parse()}
+
+    def get_unique_sa_labels(self) -> list[str]:
+        return list(set(row.sa_label for row in self.parse()))

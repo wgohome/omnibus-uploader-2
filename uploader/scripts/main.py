@@ -7,6 +7,7 @@ from uploader.controllers import (
     SampleAnnotationController,
     SampleAnnotationSpmUpdater, # TO DELETE
     CoexpressionController,
+    SampleAnnotationEntityController,
 )
 from uploader.models import (
     GeneAnnotationType,
@@ -20,6 +21,7 @@ from uploader.parsers import (
     GeneAnnotationAssignmentParser,
     SampleAnnotationAssignmentParser,
     TpmParser,
+    PoUnitParser,
 )
 
 
@@ -36,7 +38,10 @@ species_parser = SpeciesParser(
 species_controller.upload_many(species_parser.parse())
 species_id_map = species_controller.get_taxid_id_map()
 
-# curr_species_id_map = {k: v for k, v in species_id_map.items() if k in [2762]}
+# curr_species_id_map = {
+#     k: v for k, v in species_id_map.items()
+#     if k in [29729, 3726, 59689, 3888, 37334, 3562, 28526, 90675, 4111, 3641, 63459, 74649, 29655, 37682, 4432, 3625, 57918, 4155, 180498, 4572, 3649, 29730, 49451, 3821, 62335, 4529, 51953, 296587, 4543, 4686, 50452, 93759, 28532, 210143, 49390, 110835, 71139, 85681, 81985, 157791, 57577, 3988, 3914, 4182, 4236, 85692]
+# }
 curr_species_id_map = species_id_map
 
 
@@ -98,7 +103,6 @@ for taxid, species_id in curr_species_id_map.items():
         row = coexpression_controller.get_next_row()
         if row is None:
             break
-        # print(f"Processing gene {row.gene_label}")
         gene_controller.set_coexpressed_genes(
             gene_id=gene_label_id_map[row.gene_label],
             neighbors=row.neighbors,
@@ -106,9 +110,20 @@ for taxid, species_id in curr_species_id_map.items():
 
 
 #
-# Upload TPM values with sample annotations
+# Initialize sample annotation entities
 #
 
+po_parser = PoUnitParser(
+    filepath=filepath_definitions.get_sa_filepath(sa_type="PO")
+)
+po_entity_controller = SampleAnnotationEntityController(
+    new_sa_entities=po_parser.parse()
+)
+
+
+#
+# Upload TPM values with sample annotations
+#
 
 for taxid, species_id in curr_species_id_map.items():
     gene_controller = GeneController(taxid=taxid, species_id=species_id)
@@ -132,6 +147,19 @@ for taxid, species_id in curr_species_id_map.items():
         sa_assignments=sa_assignment_parser.get_sample_annotation_map(),
     )
     po_controller.upload_many(row_iterator=tpm_parser.parse())
+
+    # Update SA entities with species id
+    print(f"Updating po for taxid{taxid}")
+    po_entity_controller.update_with_species(
+        species_id,
+        sa_assignment_parser.get_unique_sa_labels()
+    )
+
+
+#
+# Upload sample annotation entities, tracking the species_ids
+#
+po_entity_controller.upload_all()
 
 
 #
