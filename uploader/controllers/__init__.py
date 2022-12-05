@@ -4,3 +4,4 @@ from .gene_annotation_controller import *
 from .gene_annotation_bucket_controller import *
 from .sample_annotation_controller import *
 from .coexpression_controller import *
+from .sample_annotation_entity_controller import *

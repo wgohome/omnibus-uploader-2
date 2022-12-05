@@ -1,5 +1,5 @@
 from functools import lru_cache
-from pymongo import ASCENDING, MongoClient
+from pymongo import ASCENDING, DESCENDING, MongoClient
 from pymongo.collection import Collection
 from pymongo.database import Database
 
@@ -11,6 +11,7 @@ from uploader.models import (
     SampleAnnotationDoc,
     GeneAnnotationDoc,
     GeneAnnotationBucketDoc,
+    SampleAnnotationEntityDoc,
 )
 
 
@@ -49,14 +50,14 @@ def setup_indexes(db: Database) -> None:
         name="unique_gene_annotations_type_and_label"
     )
     #
-    # To search gene annotation buckets by taxid
-    # and ensure bucket uniqueness on taxid and ga_id
+    # To search gene annotation buckets by spe_id
+    # and ensure bucket uniqueness on spe_id and ga_id
     # NOTE: Additionally can create another index to search by ga_id if needed
     #
     get_collection(GeneAnnotationBucketDoc, db).create_index(  # type: ignore
         [("spe_id", ASCENDING), ("ga_id", ASCENDING)],
         unique=True,
-        name="unique_taxid_ga"
+        name="unique_spe_id_ga"
     )
     #
     # To search sample annotations by species + gene (+ type + label)
@@ -71,12 +72,58 @@ def setup_indexes(db: Database) -> None:
         unique=True,
         name="unique_sample_annotation_doc"
     )
+    # #
+    # # To search sample annotations by type + label
+    # #
+    # get_collection(SampleAnnotationDoc, db).create_index(  # type: ignore
+    #     [("type", ASCENDING), ("label", ASCENDING)],
+    #     name="sample_annotation_by_type_labels"
+    # )
+    # #
+    # # To sort sample annotations by spm_med
+    # #
+    # get_collection(SampleAnnotationDoc, db).create_index(  # type: ignore
+    #     [("spm_med", DESCENDING)],
+    #     name="spm_med_descending"
+    # )
+    # #
+    # # To sort sample annotations by spm_med
+    # #
+    # get_collection(SampleAnnotationDoc, db).create_index(  # type: ignore
+    #     [("spm", DESCENDING)],
+    #     name="spm_mean_descending"
+    # )
     #
-    # To search sample annotations by type + label
+    # To search sample annotations by type + label + spm mean
     #
-    get_collection(SampleAnnotationDoc, db).create_index(  # type: ignore
+    get_collection(SampleAnnotationDoc, db).create_index(
+        [
+            ("type", ASCENDING),
+            ("label", ASCENDING),
+            ("spe_id", ASCENDING),
+            ("spm", DESCENDING),
+        ],
+        name="sample_annotation_by_spm_mean"
+    )
+    #
+    # To search sample annotations by type + label + spm median
+    #
+    get_collection(SampleAnnotationDoc, db).create_index(
+        [
+            ("type", ASCENDING),
+            ("label", ASCENDING),
+            ("spe_id", ASCENDING),
+            ("spm_med", DESCENDING),
+        ],
+        name="sample_annotation_by_spm_median"
+    )
+    #
+    # To query sample annotation entities by type and label
+    # and to enforce uniqueness constraint
+    #
+    get_collection(SampleAnnotationEntityDoc, db).create_index(
         [("type", ASCENDING), ("label", ASCENDING)],
-        name="sample_annotation_by_type_labels"
+        name="sample_annotation_entity_by_type_labels"
     )
 
 
