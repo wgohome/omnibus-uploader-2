@@ -9,6 +9,7 @@ Clone the repository to your local machine.
 Setup the local Python virtual environment, using Python >=3.10 . You may use other virutal environment other than venv.
 
     python -m venv venv
+    source venv/bin/activate
 
 Install Python dependencies.
 
